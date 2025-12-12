@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.db.query.tasks import fetchAllTask_query, createTask_query
+from app.db.query.tasks import fetchAllTask_query, createTask_query, fetchTask_query
 from app.schemas.tasks import CreateTasks
 
 
@@ -17,11 +17,9 @@ def all_tasks_by_user_id(user_id):
 def create_task(task_details: CreateTasks, user_id):
     return createTask_query(task_details, user_id)
 
-# @route.get("/{task_id}")
-# def fetch_task():
-#     return {
-#         "message" : "not implemented"
-#     }
+@route.get("/{task_id}")
+def fetch_task(task_id):
+    return fetchTask_query(task_id)
 
 # @route.put("/{task_id}")
 # def update_task(task_details):
