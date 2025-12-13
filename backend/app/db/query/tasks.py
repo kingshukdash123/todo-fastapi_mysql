@@ -1,5 +1,5 @@
 from app.db.connection import create_db_connection
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 
 
@@ -16,12 +16,12 @@ def fetchAllTask_query(user_id):
             return rows
         else:
             return JSONResponse(status_code=404, content={
-                'error': 'User not found'
+                'error': 'task not found'
             })
         
     except Exception as e:
         return JSONResponse(status_code=500, content={
-            'Something went wrong': f'{e}'
+            'something went wrong': f'{e}'
         })
     
     finally:
@@ -32,7 +32,6 @@ def fetchAllTask_query(user_id):
 
     
 
-
 def createTask_query(task, user_id):
     try: 
         conn = create_db_connection()
@@ -42,12 +41,12 @@ def createTask_query(task, user_id):
         conn.commit()
 
         return JSONResponse(status_code=201, content={
-            'message': 'Task added successfully'
+            'message': 'task added successfully'
         })
     
     except Exception as e:
         return JSONResponse(status_code=500, content={
-            'Something went wrong': f'{e}'
+            'something went wrong': f'{e}'
         })
     
     finally:
@@ -83,3 +82,97 @@ def fetchTask_query(task_id):
             curr.close()
         if conn:
             conn.close()
+
+
+
+def deleteTask_query(task_id):
+    try: 
+        conn = create_db_connection()
+        curr = conn.cursor(dictionary=True)
+        query = """
+            DELETE FROM tasks
+            WHERE id = %s
+        """
+        curr.execute(query, (task_id,))
+        conn.commit()
+
+        if curr.rowcount == 0:
+            return JSONResponse(status_code=404, content={
+                "message": "Task not found"
+            })
+
+        return JSONResponse(status_code=200, content={
+            "message": "deleted successfully"
+        })    
+        
+    except Exception as e:
+        return JSONResponse(status_code=500, content={
+            'Something went wrong': str(e)
+        })
+    
+    finally:
+        if curr:
+            curr.close()
+        if conn:
+            conn.close()            
+
+
+
+def updateTask_query(task_id, task_details):
+    update = []
+    params = []
+
+    if task_details.title != None:
+        update.append("title = %s")
+        params.append(task_details.title)
+
+    if task_details.description != None:
+        update.append("description = %s")
+        params.append(task_details.description)
+
+    if task_details.status != None:
+        update.append("status = %s")
+        params.append(task_details.status)
+
+    if not update:
+        return JSONResponse(status_code=400, content={
+            "message": "No fields provided to update"
+        })
+
+    params.append(task_id)
+
+    try:
+        conn = create_db_connection()
+        curr = conn.cursor(dictionary=True)
+        query = f"""
+            UPDATE tasks
+            SET {", ".join(update)}
+            WHERE id = %s
+        """
+        curr.execute(query, tuple(params))
+        conn.commit()
+
+        if curr.rowcount == 0:
+            return JSONResponse(
+                    status_code=404,
+                    content={"message": "Task not found"}
+            )
+        
+        return JSONResponse(
+            status_code=200,
+            content={"message": "Task updated successfully"}
+        )
+    
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"something went wrong": str(e)}
+        )
+    
+    finally:
+        if curr:
+            curr.close()
+        if conn:
+            conn.close()
+    
+

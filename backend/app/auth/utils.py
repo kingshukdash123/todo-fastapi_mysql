@@ -1,0 +1,50 @@
+from app.auth.access_token import hash_password, verify_password, create_access_token, decode_access_token
+from app.db.query.auth import create_user_query, is_exist_user, fetchUser_query
+from fastapi import HTTPException
+from fastapi import Header, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+def signup_user(user):
+    user_exist = is_exist_user(user.username)
+    if user_exist:
+        raise HTTPException(status_code=400, detail='username already exist')
+    hashed_password = hash_password(user.password)
+    user.password = hashed_password
+    return create_user_query(user)
+
+
+def login_user(user):
+    user_exist = is_exist_user(user.username)
+    if not user_exist or not verify_password(user.password, user_exist['password_hash']):
+        raise HTTPException(status_code=401, detail='invalid credentials')
+    
+    access_token = create_access_token(data={'sub': user_exist['username']})
+    return {
+        'access_token': access_token,
+        'token_type': 'bearer', 
+        'user': {
+            'id': user_exist['id'], 
+            'name': user_exist['name'], 
+            'username': user_exist['username']
+        }
+    }
+
+security = HTTPBearer()
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    if not credentials:
+        raise HTTPException(status_code=401, detail='credentials missing')
+    
+    token = credentials.credentials
+    try:
+        payload = decode_access_token(token)
+    except:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    if not payload:
+        raise HTTPException(status_code=401, detail='invalid or expire token')
+    
+    user = fetchUser_query(payload['sub'])
+    if not user:
+        raise HTTPException(status_code=401, detail='user not found')
+    
+    return user
