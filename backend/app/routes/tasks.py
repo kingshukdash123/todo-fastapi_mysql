@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from app.db.query.tasks import fetchAllTask_query, createTask_query, fetchTask_query, deleteTask_query, updateTask_query
 from app.schemas.tasks import CreateTask, UpdateTask
 from app.auth.utils import get_current_user
@@ -24,6 +24,9 @@ def fetch_task(task_id, user = Depends(get_current_user)):
 
 @route.put("/update/{task_id}")
 def update_task(task_id: int, task_details: UpdateTask, user = Depends(get_current_user)):
+    task = fetchTask_query(task_id)
+    if task['user_id'] != user['id']:
+        raise HTTPException(status_code=403, detail='not allowed to edit this task')
     return updateTask_query(task_id, task_details)
 
 @route.delete("/delete/{task_id}")

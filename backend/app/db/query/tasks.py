@@ -63,7 +63,7 @@ def fetchTask_query(task_id):
         curr = conn.cursor(dictionary=True)
         query = 'SELECT * FROM tasks WHERE id = %s'
         curr.execute(query, (task_id,))
-        rows = curr.fetchall()
+        rows = curr.fetchone()
 
         if rows:
             return rows
@@ -98,7 +98,7 @@ def deleteTask_query(task_id):
 
         if curr.rowcount == 0:
             return JSONResponse(status_code=404, content={
-                "message": "Task not found"
+                "message": "task not found"
             })
 
         return JSONResponse(status_code=200, content={
@@ -107,7 +107,7 @@ def deleteTask_query(task_id):
         
     except Exception as e:
         return JSONResponse(status_code=500, content={
-            'Something went wrong': str(e)
+            'something went wrong': str(e)
         })
     
     finally:
@@ -136,7 +136,7 @@ def updateTask_query(task_id, task_details):
 
     if not update:
         return JSONResponse(status_code=400, content={
-            "message": "No fields provided to update"
+            "message": "no fields provided to update"
         })
 
     params.append(task_id)
@@ -155,7 +155,7 @@ def updateTask_query(task_id, task_details):
         if curr.rowcount == 0:
             return JSONResponse(
                     status_code=404,
-                    content={"message": "Task not found"}
+                    content={"message": "task not found"}
             )
         
         return JSONResponse(
