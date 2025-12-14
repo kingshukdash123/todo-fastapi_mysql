@@ -40,8 +40,15 @@ def createTask_query(task, user_id):
         curr.execute(query, (user_id,task.title, task.description, task.status))
         conn.commit()
 
+        added_task = fetchAllTask_query(user_id)[-1]
         return JSONResponse(status_code=201, content={
-            'message': 'task added successfully'
+            'message': 'task added successfully', 
+            'task': {
+                'id': added_task['id'], 
+                'title': added_task['title'], 
+                'description': added_task['description'], 
+                'status': added_task['status'], 
+            }
         })
     
     except Exception as e:

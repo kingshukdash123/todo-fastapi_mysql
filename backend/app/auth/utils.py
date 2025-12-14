@@ -5,12 +5,20 @@ from fastapi import Header, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 def signup_user(user):
-    user_exist = is_exist_user(user.username)
-    if user_exist:
-        raise HTTPException(status_code=400, detail='username already exist')
-    hashed_password = hash_password(user.password)
-    user.password = hashed_password
-    return create_user_query(user)
+    try:
+        user_exist = is_exist_user(user.username)
+        if user_exist:
+            raise HTTPException(status_code=400, detail='username already exist')
+        hashed_password = hash_password(user.password)
+        user.password = hashed_password
+        return create_user_query(user)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 
 
 def login_user(user):

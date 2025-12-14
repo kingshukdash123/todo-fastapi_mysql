@@ -1,5 +1,5 @@
 import mysql.connector
-from fastapi.responses import JSONResponse
+from fastapi import HTTPException
 from app.config.db import DB_HOST, DB_USER, DB_PASSWORD, DB_PORT, DB_NAME
 
 
@@ -15,7 +15,8 @@ def create_db_connection():
                 )
         return myconn
     
-    except Exception as e:
-        return JSONResponse(status_code=500, content={
-            'Database server error : ', e
-        })
+    except mysql.connector.Error as e:
+        raise HTTPException(
+            status_code=500, 
+            detail='db is not connected'
+        )
