@@ -70,7 +70,13 @@ def delete_task(task_id, user = Depends(get_current_user)):
         if task["user_id"] != user["id"]:
             raise HTTPException(status_code=403, detail="not allowed")
         
-        return deleteTask_query(task_id)
+        deleted = deleteTask_query(task_id)
+        if deleted == 0:
+            raise HTTPException(status_code=500, detail='internal server error')
+        
+        return {
+            'message': 'task deleted successfully'
+        }
     
     except HTTPException:
         raise
