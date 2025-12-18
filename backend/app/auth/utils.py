@@ -9,16 +9,22 @@ def signup_user(user):
         user_exist = is_exist_user(user.username)
         if user_exist:
             raise HTTPException(status_code=400, detail='username already exist')
+        
         hashed_password = hash_password(user.password)
         user.password = hashed_password
-        return create_user_query(user)
+        new_user = create_user_query(user)
+        if not new_user:
+            raise HTTPException(status_code=500, detail='internal server error')
+        return {
+            "name": new_user["name"],
+            "username": new_user["username"]
+        }
+   
     except HTTPException:
         raise
+
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 def login_user(user):
@@ -36,6 +42,7 @@ def login_user(user):
             'username': user_exist['username']
         }
     }
+
 
 security = HTTPBearer()
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):

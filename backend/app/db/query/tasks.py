@@ -1,10 +1,13 @@
 from app.db.connection import create_db_connection
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse
 
 
 
 
 def fetchAllTask_query(user_id):
+    curr = None
+    conn = None
+
     try: 
         conn = create_db_connection()
         curr = conn.cursor(dictionary=True)
@@ -12,17 +15,10 @@ def fetchAllTask_query(user_id):
         curr.execute(query, (user_id,))
         rows = curr.fetchall()
 
-        if rows:
-            return rows
-        else:
-            return JSONResponse(status_code=404, content={
-                'error': 'task not found'
-            })
+        return rows
         
     except Exception as e:
-        return JSONResponse(status_code=500, content={
-            'something went wrong': f'{e}'
-        })
+        raise e
     
     finally:
         if curr:
@@ -33,6 +29,9 @@ def fetchAllTask_query(user_id):
     
 
 def createTask_query(task, user_id):
+    conn = None
+    curr = None
+
     try: 
         conn = create_db_connection()
         curr = conn.cursor(dictionary=True)
@@ -40,21 +39,13 @@ def createTask_query(task, user_id):
         curr.execute(query, (user_id,task.title, task.description, task.status))
         conn.commit()
 
-        added_task = fetchAllTask_query(user_id)[-1]
-        return JSONResponse(status_code=201, content={
-            'message': 'task added successfully', 
-            'task': {
-                'id': added_task['id'], 
-                'title': added_task['title'], 
-                'description': added_task['description'], 
-                'status': added_task['status'], 
-            }
-        })
-    
+        task_id = curr.lastrowid
+        curr.execute("SELECT * FROM tasks WHERE id = %s", (task_id,))
+        
+        return curr.fetchone()
+
     except Exception as e:
-        return JSONResponse(status_code=500, content={
-            'something went wrong': f'{e}'
-        })
+        raise e
     
     finally:
         if curr:
@@ -71,18 +62,10 @@ def fetchTask_query(task_id):
         query = 'SELECT * FROM tasks WHERE id = %s'
         curr.execute(query, (task_id,))
         rows = curr.fetchone()
-
-        if rows:
-            return rows
-        else:
-            return JSONResponse(status_code=404, content={
-                'error': 'Task not found'
-            })
+        return rows
         
-    except Exception as e:
-        return JSONResponse(status_code=500, content={
-            'Something went wrong': f'{e}'
-        })
+    except Exception:
+        raise
     
     finally:
         if curr:
@@ -93,6 +76,9 @@ def fetchTask_query(task_id):
 
 
 def deleteTask_query(task_id):
+    curr = None
+    conn = None
+
     try: 
         conn = create_db_connection()
         curr = conn.cursor(dictionary=True)
@@ -103,19 +89,10 @@ def deleteTask_query(task_id):
         curr.execute(query, (task_id,))
         conn.commit()
 
-        if curr.rowcount == 0:
-            return JSONResponse(status_code=404, content={
-                "message": "task not found"
-            })
-
-        return JSONResponse(status_code=200, content={
-            "message": "deleted successfully"
-        })    
+        return curr.rowcount   
         
-    except Exception as e:
-        return JSONResponse(status_code=500, content={
-            'something went wrong': str(e)
-        })
+    except Exception:
+        raise
     
     finally:
         if curr:
@@ -128,6 +105,8 @@ def deleteTask_query(task_id):
 def updateTask_query(task_id, task_details):
     update = []
     params = []
+    curr = None
+    conn = None
 
     if task_details.title != None:
         update.append("title = %s")
@@ -142,9 +121,7 @@ def updateTask_query(task_id, task_details):
         params.append(task_details.status)
 
     if not update:
-        return JSONResponse(status_code=400, content={
-            "message": "no fields provided to update"
-        })
+        return 0
 
     params.append(task_id)
 
@@ -159,22 +136,10 @@ def updateTask_query(task_id, task_details):
         curr.execute(query, tuple(params))
         conn.commit()
 
-        if curr.rowcount == 0:
-            return JSONResponse(
-                    status_code=404,
-                    content={"message": "task not found"}
-            )
+        return curr.rowcount
         
-        return JSONResponse(
-            status_code=200,
-            content={"message": "Task updated successfully"}
-        )
-    
-    except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={"something went wrong": str(e)}
-        )
+    except Exception:
+        raise
     
     finally:
         if curr:

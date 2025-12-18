@@ -15,6 +15,9 @@ def is_exist_user(username: str):
         rows = curr.fetchone()
         return rows
     
+    except Exception:
+        raise
+    
     finally:
         if curr is not None:
             curr.close()
@@ -26,6 +29,7 @@ def is_exist_user(username: str):
 def create_user_query(user):
     conn = None
     curr = None
+
     try: 
         conn = create_db_connection()
         curr = conn.cursor(dictionary=True)
@@ -36,11 +40,10 @@ def create_user_query(user):
         curr.execute(query, (user.name, user.username, user.password))
         conn.commit()
 
-        new_user =  fetchUser_query(user.username)
-        return {
-            "name": new_user["name"],
-            "username": new_user["username"]
-        }
+        return fetchUser_query(user.username)
+    
+    except Exception:
+        raise
     
     finally:
         if curr is not None:
@@ -52,6 +55,9 @@ def create_user_query(user):
 
 
 def fetchUser_query(username):
+    conn = None
+    curr = None
+
     try: 
         conn = create_db_connection()
         curr = conn.cursor(dictionary=True)
@@ -59,21 +65,23 @@ def fetchUser_query(username):
         curr.execute(query, (username,))
         rows = curr.fetchone()
 
-        if rows:
-            return rows
-        else:
-            return {
-                'error': 'user not found'
-            }
+        return rows
         
-    except Exception as e:
-        return JSONResponse(status_code=500, content={
-            'Something went wrong': str(e)
-        })
+    except Exception:
+        raise
+    
+    finally:
+        if curr is not None:
+            curr.close()
+        if conn is not None:
+            conn.close()
 
 
 
 def get_user_by_id(user_id):
+    conn = None
+    curr = None
+
     try: 
         conn = create_db_connection()
         curr = conn.cursor(dictionary=True)
@@ -81,14 +89,15 @@ def get_user_by_id(user_id):
         curr.execute(query, (user_id,))
         rows = curr.fetchone()
 
-        if rows:
-            return rows
-        else:
-            return {
-                'error': 'user not found'
-            }
+        return rows
         
-    except Exception as e:
-        return JSONResponse(status_code=500, content={
-            'Something went wrong': str(e)
-        })
+    except Exception:
+        raise
+
+    finally:
+        if curr is not None:
+            curr.close()
+        if conn is not None:
+            conn.close()
+
+
