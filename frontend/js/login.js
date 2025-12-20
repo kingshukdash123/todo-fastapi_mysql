@@ -64,7 +64,7 @@ login_form.addEventListener('submit', async (e) => {
 
     if(success) {
         login_form.reset();
-        window.location.href = 'home.html';
+        window.location.href = 'index.html';
     }
 
     hide_loader('LOG IN');
