@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo APP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+    <div class="body-loader">
+        <div></div>
+    </div>
+    <div class="header">
+        <h1 id="header-text">Todo APP</h1>
+        <div class="header-right">
+            <h4 id="header-msg">“Organize your day. One task at a time.”</h4>
+            <button class="logout">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <h5 id="logout-text">Log Out</h5>
+            </button>
+        </div>
+    </div>
+    <div class="main-window">
+        <div class="top-section">
+            <div class="hello-msg-box">
+                <h1 id="hello-user">Fetching User...</h1>
+                <h4 id="hello-msg">Let’s get things done today.</h4>
+            </div>
+            <div class="progress-box">
+                <div class="progress-msg">
+                    <h3 id="progress-heading">Your Progress</h3>
+                    <h5 id="progress-subheading">Keep it up!</h5>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+                <div class="progress-circle">
+                    <h3 id="progress-number">0/0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-section">
+            <div class="add-task-box">
+                <div class="task-add">
+                    <input type="text" placeholder="Write your task here..." id="task-add-input">
+                </div>
+                <button class="task-add-btn">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+            <div class="empty-image">
+                <img src="src/empty.png" alt="empty">
+            </div>
+            <div class="task-list">
+                <!-- <div class="task-box">
+                    <select name="status" class="status">
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                    <input type="text" class="task-title" value="${element.title}"></input>
+                    <div class="edit" data-id="${element.id}">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </div>
+                    <div class="delete" data-id="${element.id}">
+                        <i class="fa-solid fa-trash"></i>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    <script src="js/config.js"></script>
+    <script src="js/home.js"></script>
+</body>
+</html>

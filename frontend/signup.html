@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+    <!-- <div class="header">
+        <h1 id="header-text">Todo APP</h1>
+        <h4 id="header-msg">“Organize your day. One task at a time.”</h4>
+    </div> -->
+    <div class="signup-box">
+        <h1 class="app-name">Todo APP</h1>
+        <h2 id="signup-heading">Create an Account</h2>
+        <form class="signup-form">
+            <div>
+                <h4 class="input-tag">Name</h4>
+                <input type="text" placeholder="Enter your full name" id="signup-name" required>
+            </div>
+            <div>
+                <h4 class="input-tag">Username</h4>
+                <input type="text" placeholder="Enter your unique username" id="signup-username" required>
+            </div>
+            <div>
+                <h4 class="input-tag">Password</h4>
+                <input type="password" placeholder="Enter a strong password" id="signup-password" required>
+            </div>
+            <div>
+                <h4 class="input-tag">Confirm Password</h4>
+                <input type="password" placeholder="Re-enter your password" id="signup-re-password" required>
+            </div>
+
+            <button id="signup-btn" class="auth-btn" type="submit">SIGN UP</button>
+        </form>
+        <h5 id="signup-last-msg">Already have an account?
+            <a href="login.html" class="signup-last-msg-link">Log in</a>
+        </h5>
+        <h4 id="signup-msg" class="auth-err-msg">...</h4>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/signup.js"></script>
+</body>
+</html>
