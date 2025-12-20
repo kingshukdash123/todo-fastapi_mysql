@@ -1,7 +1,7 @@
 from app.auth.access_token import hash_password, verify_password, create_access_token, decode_access_token
 from app.db.query.auth import create_user_query, is_exist_user, fetchUser_query
 from fastapi import HTTPException
-from fastapi import Header, Depends
+from fastapi import Depends, Response, Cookie
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 def signup_user(user):
@@ -27,15 +27,23 @@ def signup_user(user):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def login_user(user):
+def login_user(user, response: Response):
     user_exist = is_exist_user(user.username)
     if not user_exist or not verify_password(user.password, user_exist['password_hash']):
         raise HTTPException(status_code=401, detail='invalid credentials')
     
     access_token = create_access_token(data={'sub': user_exist['username']})
+    response.set_cookie(
+        key="access_token",
+        value=access_token, 
+        httponly=True,
+        max_age=3600,
+        secure=True,                     # True if using HTTPS (Production)
+        samesite="lax"
+    )
+    
     return {
-        'access_token': access_token,
-        'token_type': 'bearer', 
+        'message': 'login successful',
         'user': {
             'id': user_exist['id'], 
             'name': user_exist['name'], 
@@ -44,15 +52,15 @@ def login_user(user):
     }
 
 
-security = HTTPBearer()
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    if not credentials:
+
+def get_current_user(access_token: str = Cookie(None)):
+    if not access_token:
         raise HTTPException(status_code=401, detail='credentials missing')
     
-    token = credentials.credentials
+    token = access_token
     try:
         payload = decode_access_token(token)
-    except:
+    except Exception as e:
         raise HTTPException(status_code=401, detail="Invalid token")
 
     if not payload:

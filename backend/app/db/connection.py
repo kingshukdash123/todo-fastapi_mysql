@@ -18,5 +18,5 @@ def create_db_connection():
     except mysql.connector.Error as e:
         raise HTTPException(
             status_code=500, 
-            detail='db is not connected'
+            detail='Database connection failed. try again...'
         )
