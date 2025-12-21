@@ -27,13 +27,29 @@ def root():
 
 @app.get("/health")
 def health():
+    return {
+        "status": "ok",
+        "service": "todo-backend"
+    }
+
+@app.get("/health-db")
+def health_db():
     try:
         conn = create_db_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(buffered=True)  # IMPORTANT
         cursor.execute("SELECT 1")
         cursor.fetchone()
         cursor.close()
         conn.close()
-        return {"status": "ok", "db": "awake"}
+
+        return {
+            "status": "ok",
+            "db": "awake"
+        }
+
     except Exception as e:
-        return {"status": "error", "db": "not reachable", 'reason': str(e)}
+        return {
+            "status": "error",
+            "db": "sleeping or unreachable",
+            "reason": str(e)
+        }
