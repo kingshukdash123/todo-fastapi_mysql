@@ -32,7 +32,7 @@ def health():
         "service": "todo-backend"
     }
 
-@app.head("/health")
+@app.head("/health-head")
 def health_head(response: Response):
     response.status_code = status.HTTP_200_OK
 
