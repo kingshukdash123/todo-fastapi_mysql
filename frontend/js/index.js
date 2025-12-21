@@ -323,7 +323,7 @@ const current_user = async () => {
         
         if(!res.ok) {
             console.log('auth failed, redirecting...')
-            window.location.href = 'login.html'; // or login.html
+            window.location.href = 'signup.html';
             return;
         }
 
@@ -332,7 +332,7 @@ const current_user = async () => {
     }
     catch(err) {
         console.log(err);
-        window.location.href = 'login.html';
+        window.location.href = 'signup.html';
         hideProgressLoader()
     }
     finally {
@@ -360,7 +360,7 @@ const logout = async () => {
         if (contentType && contentType.includes('application/json')) {
             returned_data = await res.json();
         }
-        window.location.href = 'login.html';
+        window.location.href = 'signup.html';
         return;
 
     }
