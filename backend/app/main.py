@@ -31,8 +31,9 @@ def health():
         conn = create_db_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT 1")
+        cursor.fetchone()
         cursor.close()
         conn.close()
         return {"status": "ok", "db": "awake"}
-    except:
-        return {"status": "error", "db": "not reachable"}
+    except Exception as e:
+        return {"status": "error", "db": "not reachable", 'reason': str(e)}
