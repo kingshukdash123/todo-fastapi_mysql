@@ -16,7 +16,13 @@ def login(user: LogInUser, response: Response):
 @route.post('/logout')
 def logout(response : Response):
     try:
-        response.delete_cookie(key="access_token")
+        response.delete_cookie(
+            key="access_token",
+            httponly=True,
+            secure=True,
+            samesite="none", 
+            path="/"
+        )
         return {"message": "Logged out successfully"}
     except Exception as e:
         # optional: log the error

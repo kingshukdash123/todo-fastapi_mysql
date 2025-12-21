@@ -39,7 +39,8 @@ def login_user(user, response: Response):
         httponly=True,
         max_age=3600,
         secure=True,                     # True if using HTTPS (Production)
-        samesite="none"
+        samesite="none", 
+        path="/"
     )
     
     return {
