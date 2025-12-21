@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status
 from app.routes.tasks import route as tasks_routes
 from app.routes.auth import route as auth_routes
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,12 +25,16 @@ app.include_router(tasks_routes)
 def root():
     return {"status": "ok", "message": "Todo backend running"}
 
-@app.api_route("/health", methods=["GET", "HEAD"])
+@app.get("/health")
 def health():
     return {
         "status": "ok",
         "service": "todo-backend"
     }
+
+@app.head("/health")
+def health_head(response: Response):
+    response.status_code = status.HTTP_200_OK
 
 @app.get("/health-db")
 def health_db():
