@@ -15,7 +15,7 @@ const status = document.querySelector('.status')
 const add_task_btn = document.querySelector('.task-add-btn')
 const add_task_input = document.querySelector('#task-add-input')
 const delete_btn = document.querySelector('.delete')
-
+const progressLoader = document.querySelector('.circle-loader');
 
 
 
@@ -37,6 +37,7 @@ task_list.addEventListener('click', (e) => {
 });
 
 const delete_task = async (task_id) => {
+    showProgressLoader()
     console.log(`deleting ${task_id}`)
     try {
         const res = await fetch(`${BASE_URL}/tasks/delete/${task_id}`, {
@@ -63,6 +64,7 @@ const delete_task = async (task_id) => {
         console.log(err);
     }
     finally {
+        hideProgressLoader();
         fetch_all_task();
     }
 }
@@ -100,6 +102,7 @@ add_task_btn.addEventListener('click', () => {
 
 
 const create_task = async (data) => {
+    showProgressLoader()
     try {
         const res = await fetch(`${BASE_URL}/tasks/create`, {
             method: 'POST', 
@@ -129,6 +132,7 @@ const create_task = async (data) => {
         console.log(err);
     }
     finally {
+        hideProgressLoader()
         fetch_all_task();
     }
 }
@@ -179,6 +183,7 @@ task_list.addEventListener('click', (e) => {
 
 const update_task = async (data, task_id) => {
     console.log('updating the task...')
+    showProgressLoader()
     console.log(task_id)
     try {
         const res = await fetch(`${BASE_URL}/tasks/update/${task_id}`, {
@@ -209,7 +214,8 @@ const update_task = async (data, task_id) => {
         console.log(err);
     }
     finally {
-        fetch_all_task()
+        hideProgressLoader();
+        fetch_all_task();
     }
 }
 
@@ -219,6 +225,7 @@ const update_task = async (data, task_id) => {
 
 const fetch_all_task = async () => {
     console.log('fetching all task...');
+    showProgressLoader();
     try {
         const res = await fetch(`${BASE_URL}/tasks`, {
             method: 'GET', 
@@ -286,11 +293,15 @@ const fetch_all_task = async () => {
     catch(err) {
         console.log(err);
     }
+    finally {
+        hideProgressLoader();
+    }
 
 }
 
 
 const current_user = async () => {
+    showProgressLoader();
     console.log('fetching current user...')
     user_name.innerText = `Fetching user...`;
     logout_btn.disabled = true;
@@ -318,22 +329,24 @@ const current_user = async () => {
 
         user_name.innerText = `Hello, ${returned_data.name}...`;
         console.log('User fetched')
-        fetch_all_task()
     }
     catch(err) {
         console.log(err);
         window.location.href = 'login.html';
+        hideProgressLoader()
     }
     finally {
         // hide_body_loader()
         logout_btn.disabled = false;
         logout_btn.style.cursor = 'pointer';
+        hideProgressLoader();
+        fetch_all_task();
     } 
 }
 
 
 const logout = async () => {
-    // show_loader_btn(logout_btn);
+    showProgressLoader()
     logout_text.innerText = 'Loading...'
     logout_btn.disabled = true
     try {
@@ -357,7 +370,8 @@ const logout = async () => {
     }
     finally {
         logout_text.innerText = 'Log Out';
-        logout_btn.disabled = false
+        logout_btn.disabled = false;
+        hideProgressLoader()
     }
 }
 
@@ -368,7 +382,15 @@ const logout = async () => {
 
 
 
+const showProgressLoader = () => {
+    progressLoader.classList.remove('hidden');
+    progress_num.classList.add('hidden');
+};
 
+const hideProgressLoader = () => {
+    progressLoader.classList.add('hidden');
+    progress_num.classList.remove('hidden');
+};
 
 
 
