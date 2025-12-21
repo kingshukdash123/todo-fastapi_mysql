@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.routes.tasks import route as tasks_routes
 from app.routes.auth import route as auth_routes
 from fastapi.middleware.cors import CORSMiddleware
+from app.db.connection import create_db_connection
 
 app = FastAPI(title='Todo App')
 
@@ -23,3 +24,15 @@ app.include_router(tasks_routes)
 @app.get("/")
 def root():
     return {"status": "ok", "message": "Todo backend running"}
+
+@app.get("/health")
+def health():
+    try:
+        conn = create_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        cursor.close()
+        conn.close()
+        return {"status": "ok", "db": "awake"}
+    except:
+        return {"status": "error", "db": "not reachable"}
